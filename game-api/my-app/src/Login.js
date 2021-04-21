@@ -1,41 +1,80 @@
-import React from 'react';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import React, { Component } from 'react';
+import races from './races';
+import classes from './classes';
 
-import Login from "./components/login.component";
-import SignUp from "./components/signup.component";
+class Login extends Component {
+    constructor(props) {
+        super(props);
 
-function App() {
-  return (<Router>
-    <div className="App">
-      <nav className="navbar navbar-expand-lg navbar-light fixed-top">
-        <div className="container">
-          <Link className="navbar-brand" to={"/sign-in"}>KDivision.ca</Link>
-          <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul className="navbar-nav ml-auto">
-              <li className="nav-item">
-                <Link className="nav-link" to={"/sign-in"}>Login</Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to={"/sign-up"}>Sign up</Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+        this.state = {
+            name: '',
+            race: 'human',
+            cls: 'fighter'
+        };
 
-      <div className="auth-wrapper">
-        <div className="auth-inner">
-          <Switch>
-            <Route exact path='/' component={Login} />
-            <Route path="/sign-in" component={Login} />
-            <Route path="/sign-up" component={SignUp} />
-          </Switch>
-        </div>
-      </div>
-    </div></Router>
-  );
+        this._handleLogin = this._onLogin.bind(this);
+        this._handleNameChange = this._onNameChange.bind(this);
+        this._handleRaceChange = this._onRaceChange.bind(this);
+        this._handleClassChange = this._onClassChange.bind(this);
+    }
+
+    render() {
+        const { name, race, cls } = this.state;
+        const racesOptions = races.map((race) => <option value={race.id}>{race.name}</option>);
+        const classesOptions = classes.map((cls) => <option value={cls.id}>{cls.name}</option>);
+
+        return (
+            <div className="row justify-content-center">
+                <div className="col-sm-6 col-md-4">
+                    <div className="card">
+                        <div className="card-body">
+                            <h4 className="card-title">Join Game</h4>
+                            <form onSubmit={ this._handleLogin }>
+                                <div className="form-group">
+                                    <label htmlFor="characterName">Name</label>
+                                    <input type="text" className="form-control" id="characterName" placeholder="Enter name" value={ name } onChange={ this._handleNameChange }/>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="characterRace">Race</label>
+                                    <select id="characterRace" className="form-control" value={ race } onChange={ this._handleRaceChange }>
+                                        { racesOptions }
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="characterClass">Class</label>
+                                    <select id="characterClass" className="form-control" value={ cls } onChange={ this._handleClassChange }>
+                                        { classesOptions }
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <input type="submit" className="btn btn-primary" value="Join Game" />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    _onLogin(e) {
+        const { name, race, cls } = this.state;
+        e.preventDefault();
+
+        this.props.handleLogin(name, race, cls);
+    }
+
+    _onNameChange(e) {
+        this.setState({name: e.target.value});
+    }
+
+    _onRaceChange(e) {
+        this.setState({race: e.target.value});
+    }
+
+    _onClassChange(e) {
+        this.setState({cls: e.target.value});
+    }
 }
 
-export default App;
+export default Login;
